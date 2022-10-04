@@ -44,8 +44,8 @@ class ReturnDateResolverDialog(CancelAndHelpDialog):
             prompt_msg_text, prompt_msg_text, InputHints.expecting_input
         )
 
-        reprompt_msg_text = "I'm sorry, for best results, please enter your travel date including the month, " \
-                            "day and year. "
+        reprompt_msg_text = "I'm sorry, for best results, please enter your travel date using this format, " \
+                            "DD-MM-YYYY. "
         reprompt_msg = MessageFactory.text(
             reprompt_msg_text, reprompt_msg_text, InputHints.expecting_input
         )

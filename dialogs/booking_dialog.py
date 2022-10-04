@@ -66,7 +66,7 @@ class BookingDialog(CancelAndHelpDialog):
         booking_details = step_context.options
 
         # Capture the response to the previous step's prompt
-        booking_details.origin = step_context.result
+        booking_details.origin = step_context.result.capitalize()
         if booking_details.destination is None:
             message_text = "What will your destination be for your vacation?"
             prompt_message = MessageFactory.text(
@@ -89,7 +89,7 @@ class BookingDialog(CancelAndHelpDialog):
         booking_details = step_context.options
 
         # Capture the results of the previous step
-        booking_details.destination = step_context.result
+        booking_details.destination = step_context.result.capitalize()
         if not booking_details.departure_date or self.is_ambiguous(
             booking_details.departure_date
         ):
