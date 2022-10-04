@@ -26,13 +26,27 @@ class CancelAndHelpDialog(ComponentDialog):
         if inner_dc.context.activity.type == ActivityTypes.message:
             text = inner_dc.context.activity.text.lower()
 
-            help_message_text = "Show Help..."
+            help_message_text = ""
             help_message = MessageFactory.text(
                 help_message_text, help_message_text, InputHints.expecting_input
             )
 
             if text in ("help", "?"):
-                await inner_dc.context.send_activity(help_message)
+                await inner_dc.context.send_activity(
+                    """
+I am designed to help you do the following \n
+    - Book a flight 
+    - Change an existing one 
+    - Give you the weather.
+
+Keep in mind that I need the following information from you: \n
+    - City of origin and destination
+    - Date of departure and return ==> DD-MM-YYYY
+    - Budget, make sure to let me know your maximum in euros
+
+You can type cancel at any moment to start over.
+                """
+                )
                 return DialogTurnResult(DialogTurnStatus.Waiting)
 
             cancel_message_text = "Cancelling"
