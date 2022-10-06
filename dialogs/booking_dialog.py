@@ -108,6 +108,7 @@ class BookingDialog(CancelAndHelpDialog):
         :return DialogTurnResult:
         """
         booking_details = step_context.options
+        
 
         # Capture the results of the previous step
         booking_details.departure_date = step_context.result
@@ -115,7 +116,7 @@ class BookingDialog(CancelAndHelpDialog):
             booking_details.return_date
         ):
             return await step_context.begin_dialog(
-                ReturnDateResolverDialog.__name__, booking_details.return_date
+                ReturnDateResolverDialog.__name__, booking_details #### 
             )
         return await step_context.next(booking_details.return_date)
 

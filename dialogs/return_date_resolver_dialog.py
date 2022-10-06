@@ -37,24 +37,33 @@ class ReturnDateResolverDialog(CancelAndHelpDialog):
     async def initial_step(
         self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
-        timex = step_context.options
+        booking_details = step_context.options
+        timex = booking_details.return_date
+        dep_date = booking_details.departure_date
+        
 
         prompt_msg_text = "On what date would you like to travel back?"
         prompt_msg = MessageFactory.text(
             prompt_msg_text, prompt_msg_text, InputHints.expecting_input
         )
 
-        reprompt_msg_text = "I'm sorry, for best results, please enter your travel date using this format, " \
-                            "DD-MM-YYYY. "
+        reprompt_msg_text = ("I'm sorry, something is wrong with your date. Check the following :\n"
+        "I understand this format DD-MM-YYYY the best./n"
+        "Verify that your return date is after your departure date.")
         reprompt_msg = MessageFactory.text(
             reprompt_msg_text, reprompt_msg_text, InputHints.expecting_input
         )
 
         if timex is None:
-            # We were not given any date at all so prompt the user.
+            # We were not given any date at all so prompt the user. we pass the departure date as options
+            #for the prompt validator
+            #set number of attempts to 3
             return await step_context.prompt(
                 DateTimePrompt.__name__,
-                PromptOptions(prompt=prompt_msg, retry_prompt=reprompt_msg),
+                PromptOptions(prompt=prompt_msg,
+                retry_prompt=reprompt_msg,
+                number_of_attempts=3,
+                validations=dep_date)
             )
         # We have a Date we just need to check it is unambiguous.
         if "definite" not in Timex(timex).types:
@@ -62,6 +71,14 @@ class ReturnDateResolverDialog(CancelAndHelpDialog):
             return await step_context.prompt(
                 DateTimePrompt.__name__, PromptOptions(prompt=reprompt_msg)
             )
+        
+        #check date cohenrency
+        #if not timex < booking_details.departure_date:
+        #    )
+            #date de return before date of departure
+         #   return await step_context.prompt(
+         #       DateTimePrompt.__name__, PromptOptions(prompt=reprompt_msg2)
+         #   )
 
         return await step_context.next(DateTimeResolution(timex=timex))
 
@@ -73,8 +90,13 @@ class ReturnDateResolverDialog(CancelAndHelpDialog):
     async def datetime_prompt_validator(prompt_context: PromptValidatorContext) -> bool:
         if prompt_context.recognized.succeeded:
             timex = prompt_context.recognized.value[0].timex.split("T")[0]
-
-            # TODO: Needs TimexProperty
-            return "definite" in Timex(timex).types
+            return_date = prompt_context.recognized.value[0].timex
+            dep_date = prompt_context.options.validations
+            #print(f"return date = {return_date}")
+            #print(f"test1 = {dep_date}")
+            if dep_date < return_date:
+              
+                # TODO: Needs TimexProperty
+                return "definite" in Timex(timex).types
 
         return False
