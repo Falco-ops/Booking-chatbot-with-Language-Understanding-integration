@@ -73,6 +73,7 @@ class DepartureDateResolverDialog(CancelAndHelpDialog):
 
     @staticmethod
     async def datetime_prompt_validator(prompt_context: PromptValidatorContext) -> bool:
+        #we check that we have all information for the date day month and year
         if len(prompt_context.recognized.value[0].timex.split('-')) == 3:
         #if prompt_context.recognized.succeeded:
             timex = prompt_context.recognized.value[0].timex#.split("T")[0]
@@ -81,6 +82,7 @@ class DepartureDateResolverDialog(CancelAndHelpDialog):
                 int(timex.split("-")[2])
             )
             today = datetime.datetime(date.today().year, date.today().month, date.today().day)
+            #compare if date given is coherent i.e. after the current day
             if dep_date >= today:
             # TODO: Needs TimexProperty
                 return "definite" in Timex(timex).types
