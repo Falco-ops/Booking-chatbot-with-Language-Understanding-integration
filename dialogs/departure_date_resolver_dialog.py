@@ -2,6 +2,8 @@
 # Licensed under the MIT License.
 
 from datatypes_date_time.timex import Timex
+import datetime
+from datetime import date
 
 from botbuilder.core import MessageFactory
 from botbuilder.dialogs import WaterfallDialog, DialogTurnResult, WaterfallStepContext
@@ -45,7 +47,7 @@ class DepartureDateResolverDialog(CancelAndHelpDialog):
         )
 
         reprompt_msg_text = "I'm sorry, for best results, please enter your travel date including the month, " \
-                            "day and year. "
+                            "day and year. Make sure your date is not anterior of today"
         reprompt_msg = MessageFactory.text(
             reprompt_msg_text, reprompt_msg_text, InputHints.expecting_input
         )
@@ -71,10 +73,16 @@ class DepartureDateResolverDialog(CancelAndHelpDialog):
 
     @staticmethod
     async def datetime_prompt_validator(prompt_context: PromptValidatorContext) -> bool:
-        if prompt_context.recognized.succeeded:
-            timex = prompt_context.recognized.value[0].timex.split("T")[0]
-
+        if len(prompt_context.recognized.value[0].timex.split('-')) == 3:
+        #if prompt_context.recognized.succeeded:
+            timex = prompt_context.recognized.value[0].timex#.split("T")[0]
+            print(timex)
+            dep_date = datetime.datetime(int(timex.split("-")[0]), int(timex.split("-")[1]), 
+                int(timex.split("-")[2])
+            )
+            today = datetime.datetime(date.today().year, date.today().month, date.today().day)
+            if dep_date >= today:
             # TODO: Needs TimexProperty
-            return "definite" in Timex(timex).types
+                return "definite" in Timex(timex).types
 
         return False

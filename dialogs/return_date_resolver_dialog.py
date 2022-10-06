@@ -47,9 +47,9 @@ class ReturnDateResolverDialog(CancelAndHelpDialog):
             prompt_msg_text, prompt_msg_text, InputHints.expecting_input
         )
 
-        reprompt_msg_text = ("I'm sorry, something is wrong with your date. Check the following :\n"
-        "I understand this format DD-MM-YYYY the best./n"
-        "Verify that your return date is after your departure date.")
+        reprompt_msg_text = ("I'm sorry, something is wrong with your date. Check the following :\n is your format correct (DD-MM-YYYY is best).\n Verify that your return date is after your departure date.")
+
+        
         reprompt_msg = MessageFactory.text(
             reprompt_msg_text, reprompt_msg_text, InputHints.expecting_input
         )
@@ -72,13 +72,6 @@ class ReturnDateResolverDialog(CancelAndHelpDialog):
                 DateTimePrompt.__name__, PromptOptions(prompt=reprompt_msg)
             )
         
-        #check date cohenrency
-        #if not timex < booking_details.departure_date:
-        #    )
-            #date de return before date of departure
-         #   return await step_context.prompt(
-         #       DateTimePrompt.__name__, PromptOptions(prompt=reprompt_msg2)
-         #   )
 
         return await step_context.next(DateTimeResolution(timex=timex))
 
@@ -92,8 +85,6 @@ class ReturnDateResolverDialog(CancelAndHelpDialog):
             timex = prompt_context.recognized.value[0].timex.split("T")[0]
             return_date = prompt_context.recognized.value[0].timex
             dep_date = prompt_context.options.validations
-            #print(f"return date = {return_date}")
-            #print(f"test1 = {dep_date}")
             if dep_date < return_date:
               
                 # TODO: Needs TimexProperty
