@@ -136,7 +136,7 @@ class BookingDialog(CancelAndHelpDialog):
 
         if booking_details.budget is None:
             message_text = "And what is your budget for this trip ?"
-            repromt_text = 'Please give me a positive number in euros.'
+            repromt_text = 'Sorry I didn\'t get that. Try giving me a number. If you don\'t mention it, the currency will be in euros.'
             prompt_message = MessageFactory.text(message_text, message_text, InputHints.expecting_input)
             reprompt_message = MessageFactory.text(repromt_text)
             return await step_context.prompt(
