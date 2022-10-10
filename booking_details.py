@@ -11,7 +11,7 @@ class BookingDetails:
         budget: str = None,
         return_date: str = None,
         unsupported_airports = None,
-        currency: str = '€'
+        currency: str = 'Euro'
     ):
         if unsupported_airports is None:
             unsupported_airports = []
