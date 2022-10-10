@@ -10,8 +10,8 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs.prompts import TextPrompt, PromptOptions, ChoicePrompt
 from botbuilder.dialogs.choices import Choice
 from botbuilder.core import MessageFactory, TurnContext
-from botbuilder.schema import InputHints
-
+from botbuilder.schema import InputHints, Attachment
+import json
 from booking_details import BookingDetails
 from flight_booking_recognizer import FlightBookingRecognizer
 from helpers.luis_helper import LuisHelper, Intent
@@ -137,8 +137,37 @@ class MainDialog(ComponentDialog):
             message = MessageFactory.text(msg_txt, msg_txt, InputHints.ignoring_input)
             await step_context.context.send_activity(message)
 
+            card = self.create_adaptive_card_attachment(result)
+            response = MessageFactory.attachment(card)
+            await step_context.context.send_activity(response)
+
         prompt_message = "What else can I do for you?"
         return await step_context.replace_dialog(self.id, prompt_message)
+    
+    #booking card builder
+    def create_adaptive_card_attachment(self, result):
+        """Create an adaptive card."""
+        
+        path =  "cards/booking_Card.json"
+        with open(path) as card_file:
+            card = json.load(card_file)
+        
+        origin = result.origin
+        destination = result.destination
+        departure_date = result.departure_date
+        return_date = result.return_date
+        budget = result.budget
+
+        card['body'][2]['text'] = departure_date
+        card['body'][3]["columns"][0]['items'][0]['text'] = origin
+        card['body'][3]["columns"][2]['items'][0]['text'] = destination
+        card['body'][5]['text'] = return_date
+        card['body'][6]["columns"][0]['items'][0]['text'] = destination
+        card['body'][6]["columns"][2]['items'][0]['text'] = origin
+        card['body'][7]["columns"][1]['items'][0]['text'] = f"{budget} €"
+
+        return Attachment(
+            content_type="application/vnd.microsoft.card.adaptive", content=card)
 
     @staticmethod
     async def _show_warning_for_unsupported_cities(
