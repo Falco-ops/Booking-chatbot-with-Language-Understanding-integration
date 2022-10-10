@@ -4,7 +4,7 @@
 from datatypes_date_time.timex import Timex
 
 from botbuilder.dialogs import WaterfallDialog, WaterfallStepContext, DialogTurnResult
-from botbuilder.dialogs.prompts import ConfirmPrompt, TextPrompt, PromptOptions
+from botbuilder.dialogs.prompts import ConfirmPrompt, TextPrompt, PromptOptions, NumberPrompt, PromptValidatorContext
 from botbuilder.core import MessageFactory
 from botbuilder.schema import InputHints
 from .cancel_and_help_dialog import CancelAndHelpDialog
@@ -20,6 +20,7 @@ class BookingDialog(CancelAndHelpDialog):
         self.add_dialog(ConfirmPrompt(ConfirmPrompt.__name__))
         self.add_dialog(DepartureDateResolverDialog(DepartureDateResolverDialog.__name__))
         self.add_dialog(ReturnDateResolverDialog(ReturnDateResolverDialog.__name__))
+        self.add_dialog(NumberPrompt(NumberPrompt.__name__, BookingDialog.budget_validator))
         self.add_dialog(
             WaterfallDialog(
                 WaterfallDialog.__name__,
@@ -123,7 +124,8 @@ class BookingDialog(CancelAndHelpDialog):
     async def budget_step(self, step_context: WaterfallStepContext
                         ) -> DialogTurnResult:
         """
-        If a budget has not been provided, prompt for one.
+        If a budget has not been provided, prompt for one. Pormpt validator to check for 
+        prositive integer. The check is only done during waterfall dialog. 
         :param step_context:
         :return DialogTurnResult:
         """
@@ -133,10 +135,14 @@ class BookingDialog(CancelAndHelpDialog):
 
         if booking_details.budget is None:
             message_text = "And what is your budget for this trip ?"
-            prompt_message = MessageFactory.text(
-                message_text, message_text, InputHints.expecting_input)
+            repromt_text = 'Please give me a positive number in euros.'
+            prompt_message = MessageFactory.text(message_text, message_text, InputHints.expecting_input)
+            reprompt_message = MessageFactory.text(repromt_text)
             return await step_context.prompt(
-                TextPrompt.__name__, PromptOptions(prompt=prompt_message))
+                NumberPrompt.__name__, 
+                PromptOptions(
+                    prompt=prompt_message,
+                    retry_prompt=reprompt_message))
                 
         return await step_context.next(booking_details.budget)
 
@@ -208,3 +214,11 @@ class BookingDialog(CancelAndHelpDialog):
     def is_ambiguous(self, timex: str) -> bool:
         timex_property = Timex(timex)
         return "definite" not in timex_property.types
+
+    @staticmethod
+    async def budget_validator(prompt_context: PromptValidatorContext) -> bool:
+        # This condition is our validation rule. positive number
+        return (
+            prompt_context.recognized.succeeded
+            and 0 < prompt_context.recognized.value 
+        )
