@@ -2,7 +2,8 @@
 # Licensed under the MIT License.
 
 from datatypes_date_time.timex import Timex
-
+import recognizers_suite as Recognizers
+from recognizers_suite import Culture, ModelResult
 from botbuilder.dialogs import WaterfallDialog, WaterfallStepContext, DialogTurnResult
 from botbuilder.dialogs.prompts import ConfirmPrompt, TextPrompt, PromptOptions, NumberPrompt, PromptValidatorContext
 from botbuilder.core import MessageFactory
@@ -20,7 +21,7 @@ class BookingDialog(CancelAndHelpDialog):
         self.add_dialog(ConfirmPrompt(ConfirmPrompt.__name__))
         self.add_dialog(DepartureDateResolverDialog(DepartureDateResolverDialog.__name__))
         self.add_dialog(ReturnDateResolverDialog(ReturnDateResolverDialog.__name__))
-        self.add_dialog(NumberPrompt(NumberPrompt.__name__, BookingDialog.budget_validator))
+        self.add_dialog(TextPrompt("budget", BookingDialog.budget_validator))
         self.add_dialog(
             WaterfallDialog(
                 WaterfallDialog.__name__,
@@ -139,7 +140,7 @@ class BookingDialog(CancelAndHelpDialog):
             prompt_message = MessageFactory.text(message_text, message_text, InputHints.expecting_input)
             reprompt_message = MessageFactory.text(repromt_text)
             return await step_context.prompt(
-                NumberPrompt.__name__, 
+                "budget", 
                 PromptOptions(
                     prompt=prompt_message,
                     retry_prompt=reprompt_message))
@@ -156,13 +157,17 @@ class BookingDialog(CancelAndHelpDialog):
         """
         booking_details = step_context.options
 
-        # Capture the results of the previous step
-        booking_details.budget = step_context.result
+        # Capture the results of the previous step budget and currency
+        currency = Recognizers.recognize_currency(step_context.result, Culture.English)
+        budget = Recognizers.recognize_number(step_context.result, Culture.English)
+        booking_details.budget = budget[0].resolution['value']
+        if len(currency)>0:
+            booking_details.currency = currency[0].resolution["unit"]
         message_text = (
             f"Could you please confirm, I have you traveling to: { booking_details.destination } from: "
             f"{ booking_details.origin }. You will be leaving on the: { booking_details.departure_date} "
             f"and returning on the: {booking_details.return_date}. "
-            f"And your budget is {booking_details.budget} euros"
+            f"And your budget is {booking_details.budget} {booking_details.currency}"
         )
         prompt_message = MessageFactory.text(
             message_text, message_text, InputHints.expecting_input
@@ -218,7 +223,9 @@ class BookingDialog(CancelAndHelpDialog):
     @staticmethod
     async def budget_validator(prompt_context: PromptValidatorContext) -> bool:
         # This condition is our validation rule. positive number
-        return (
-            prompt_context.recognized.succeeded
-            and 0 < prompt_context.recognized.value 
-        )
+        budget = Recognizers.recognize_number(prompt_context.recognized.value, Culture.English)
+        #if no number are recognize it will return an empty list
+        if len(budget)>0:
+            return True
+        return False
+

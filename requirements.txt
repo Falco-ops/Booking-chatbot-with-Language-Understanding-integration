@@ -6,3 +6,4 @@ datatypes-date-time>=1.0.0.a2
 asyncio
 aiohttp
 cookiecutter==1.7.0
+recognizers-text-suite

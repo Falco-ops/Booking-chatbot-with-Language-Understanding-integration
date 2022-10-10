@@ -157,6 +157,7 @@ class MainDialog(ComponentDialog):
         departure_date = result.departure_date
         return_date = result.return_date
         budget = result.budget
+        curr = result.currency
 
         card['body'][2]['text'] = departure_date
         card['body'][3]["columns"][0]['items'][0]['text'] = origin
@@ -164,7 +165,7 @@ class MainDialog(ComponentDialog):
         card['body'][5]['text'] = return_date
         card['body'][6]["columns"][0]['items'][0]['text'] = destination
         card['body'][6]["columns"][2]['items'][0]['text'] = origin
-        card['body'][7]["columns"][1]['items'][0]['text'] = f"{budget} €"
+        card['body'][7]["columns"][1]['items'][0]['text'] = f"{budget} {curr}"
 
         return Attachment(
             content_type="application/vnd.microsoft.card.adaptive", content=card)
