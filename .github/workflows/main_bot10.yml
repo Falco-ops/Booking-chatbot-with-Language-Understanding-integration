@@ -32,8 +32,8 @@ jobs:
 
       - name: Create and start virtual environment
         run: |
-          python -m venv venv
-          source venv/bin/activate
+          python -m venv envBot10
+          source envBot10/bin/activate
       
       - name: Set up dependency caching for faster installs
         uses: actions/cache@v3
@@ -54,7 +54,7 @@ jobs:
           name: python-app
           path: |
             .
-            !venv/
+            !envBot10/
   deploy:
     runs-on: ubuntu-latest
     needs: build
