@@ -9,10 +9,10 @@ This project purpose is to build and end-to-end machine learning product that he
 * Ask for missing information
 * Prompt for confirmation
 * Booking card simulating flight result
-* Data validation :
-      - [Text recognizer](https://github.com/microsoft/Recognizers-Text/tree/master/Python) from microsoft 
-      - check for date coherency
-      - detect currency
+* Data validation :  
+      - [Text recognizer](https://github.com/microsoft/Recognizers-Text/tree/master/Python) from microsoft  
+      - check for date coherency  
+      - detect currency  
 * Prompt multi-choice if user intent is not detected
 
 ## Frame Dataset
@@ -20,19 +20,47 @@ This project purpose is to build and end-to-end machine learning product that he
 
 [Download dataset](https://www.microsoft.com/en-us/research/project/frames-dataset/)
 
-[Notebook](https://github.com/Falco-ops/OPCR_Booking_bot/blob/master/Notebook/proj10_data_analyse.ipynb)
+See [Notebook](https://github.com/Falco-ops/OPCR_Booking_bot/blob/master/Notebook/proj10_data_analyse.ipynb) to clean the data and export it to the correct format to train the LUIS App.
 
-## Dependencies
+## Import repository
+```bash
+git clone https://github.com/Falco-ops/OPCR_Booking_bot
+
+```
+
+
+## Install dependencies
 Create virtual envrionment and instal dependencies
-'''console
+```console
 #create env
 #python3 -m venv bot_env
 
 #install dependencies
 pip install -r requirements.txt
-'''
+```
 
+## Create a LUIS Application to enable language understanding
+The LUIS model for this example can be found under `CognitiveModels/FlightBooking.json` and the LUIS language model setup, training, and application configuration steps can be found [here](https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-howto-v4-luis?view=azure-bot-service-4.0&tabs=cs).
 
+## Testing the Bot with Emulator
+Bot Framework Emulator is a desktop application that allows bot developers to test and debug their bots on localhost or running remotely through a tunnel.
+* Install [here](https://github.com/Microsoft/BotFramework-Emulator/releases)
+
+To connect the bot using the bot Framework:
+* Activate your environment
+```console
+bot_env\Scripts\activate.bat
+```
+* Run the bot with
+```Console
+python app.py
+```
+* Lauch Bot Framework Emulator
+* file -> Open Bot
+* Entre the Bot URL `http://localhost:3978/api/messages`
+
+## Instruction for deployment
+See the instruction list from Azure : [deploy your bot to Azure](https://aka.ms/azuredeployment)
 
 
 ## Documentation
