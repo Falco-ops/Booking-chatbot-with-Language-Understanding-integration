@@ -36,7 +36,7 @@ Create virtual envrionment and instal dependencies
 python3 -m venv bot_env
 
 #install dependencies
-pip install -r requirements.txt
+pip install -r requirements2.txt
 ```
 
 ## Create a LUIS Application to enable language understanding
