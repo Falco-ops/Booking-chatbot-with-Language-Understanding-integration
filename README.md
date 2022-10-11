@@ -33,7 +33,7 @@ git clone https://github.com/Falco-ops/OPCR_Booking_bot
 Create virtual envrionment and instal dependencies
 ```console
 #create env
-#python3 -m venv bot_env
+python3 -m venv bot_env
 
 #install dependencies
 pip install -r requirements.txt
@@ -60,7 +60,29 @@ python app.py
 * Entre the Bot URL `http://localhost:3978/api/messages`
 
 ## Instruction for deployment
-See the instruction list from Azure : [deploy your bot to Azure](https://aka.ms/azuredeployment)
+See the instruction list from Azure : [deploy your bot to Azure](https://aka.ms/azuredeployment)  
+* Create ressource using the ARM template.  
+Enable Git in the app by adding `--deployment-local-git` when running [az webapp create](https://learn.microsoft.com/en-us/cli/azure/webapp#az-webapp-create)  
+* Create zip file containing requirements.txt  
+* Publish with Azure CLI  
+```console
+az webapp deployment source config-zip --resource-group "<resource-group-name>" --name "<name-of-app-service>" --src "<project-zip-path>"
+```
+
+## Use Git action for continuous deployment
+Deployment from github repository:  
+`az webapp deployment source config-local-git --name <app-name> --resource-group <group-name>`  
+* Configure an Azure publish profile and create an `AZURE_WEBAPP_PUBLISH_PROFILE` secret.  
+
+Generate your Azure deployment credentials using a publish profile. For more information, see "[Generate deployment credentials](https://docs.microsoft.com/azure/app-service/deploy-github-actions?tabs=applevel#generate-deployment-credentials)" in the Azure documentation.  
+
+In your GitHub repository (Settinfs>Secrets>Action), create a secret named `AZURE_WEBAPP_PUBLISH_PROFILE` that contains the contents of the publish profile.  
+* Add YAML workflow  
+Go to your repository Actions > set up workflow yourself > copy paste the template available [here](https://docs.github.com/en/actions/deployment/deploying-to-your-cloud-provider/deploying-to-azure/deploying-python-to-azure-app-service)  
+For editing :   
+github action for Azure can be found [here](https://github.com/marketplace?query=Azure&type=actions)  
+List of action to trigger deployment can be found [here](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions)  
+
 
 
 ## Documentation
@@ -69,9 +91,8 @@ See the instruction list from Azure : [deploy your bot to Azure](https://aka.ms/
 - [Bot Basics](https://docs.microsoft.com/azure/bot-service/bot-builder-basics?view=azure-bot-service-4.0)
 - [Azure Bot Service Introduction](https://docs.microsoft.com/azure/bot-service/bot-service-overview-introduction?view=azure-bot-service-4.0)
 - [Azure Bot Service Documentation](https://docs.microsoft.com/azure/bot-service/?view=azure-bot-service-4.0)
-- [Azure Portal](https://portal.azure.com)
+- [Microsoft Text recognizer](https://github.com/microsoft/Recognizers-Text/tree/master/Python)
 - [Language Understanding using LUIS](https://docs.microsoft.com/en-us/azure/cognitive-services/luis/)
-- [Channels and Bot Connector Service](https://docs.microsoft.com/en-us/azure/bot-service/bot-concepts?view=azure-bot-service-4.0)
 - [Azure App Insight documentation](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 - [Deploy the bot to Azure](https://aka.ms/azuredeployment)
 
