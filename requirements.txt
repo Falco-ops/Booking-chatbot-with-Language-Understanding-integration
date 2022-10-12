@@ -12,4 +12,4 @@ azure-cognitiveservices-language-luis>=0.2.0
 msrest>=0.6.10
 emoji==1.7
 recognizers-text-suite
-
+gunicorn
