@@ -57,12 +57,12 @@ class ReturnDateResolverDialog(CancelAndHelpDialog):
         if timex is None:
             # We were not given any date at all so prompt the user. we pass the departure date as options
             #for the prompt validator
-            #set number of attempts to 3
+            #set number of attempts to 0
             return await step_context.prompt(
                 DateTimePrompt.__name__,
                 PromptOptions(prompt=prompt_msg,
                 retry_prompt=reprompt_msg,
-                number_of_attempts=3,
+                number_of_attempts=1,
                 validations=dep_date)
             )
         # We have a Date we just need to check it is unambiguous.
@@ -81,6 +81,7 @@ class ReturnDateResolverDialog(CancelAndHelpDialog):
 
     @staticmethod
     async def datetime_prompt_validator(prompt_context: PromptValidatorContext) -> bool:
+        
         if prompt_context.recognized.succeeded:
             timex = prompt_context.recognized.value[0].timex.split("T")[0]
             return_date = prompt_context.recognized.value[0].timex
@@ -89,5 +90,16 @@ class ReturnDateResolverDialog(CancelAndHelpDialog):
               
                 # TODO: Needs TimexProperty
                 return "definite" in Timex(timex).types
+            else:
+                if prompt_context.options.number_of_attempts > 1:
+                #track trace to telemetry
+                #self.telemetry_client.track_trace("LOOP return date", "ERROR")
+                    print(f"number of attemps is {prompt_context.options.number_of_attempts}, send telemetry STUCK IN LOOP")
+        
+        else:
+            if prompt_context.options.number_of_attempts > 1:
+            #track trace to telemetry
+            #self.telemetry_client.track_trace("LOOP return date", "ERROR")
+                print(f"number of attemps is {prompt_context.options.number_of_attempts}, send telemetry STUCK IN LOOP")
 
         return False

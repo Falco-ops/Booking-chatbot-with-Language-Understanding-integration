@@ -187,7 +187,7 @@ class BookingDialog(CancelAndHelpDialog):
         #is a yes or no
         booking_details = step_context.options
 
-        # Create dictionnary for App Insights
+        # We want to save the data saved by the bot to send to telemetry.
         #properties = {}
         #properties["origin"] = booking_details.origin
         #properties["destination"] = booking_details.destination
@@ -198,7 +198,8 @@ class BookingDialog(CancelAndHelpDialog):
         #if the bot was succeful
         if step_context.result:
             #location for app insight trace track
-            #self.telemetry_client.track_trace("YES answer", properties, "INFO")
+            #self.telemetry_client.track_trace("Bot successful", properties, "INFO")
+            print('Send telemetry trace BOT SUCESSFUL')
             return await step_context.end_dialog(booking_details)
 
         else:
@@ -209,7 +210,7 @@ class BookingDialog(CancelAndHelpDialog):
             )
 
             await step_context.context.send_activity(prompt_message)
-
+            print('Send telemetry trace BOT UNSUCESSFUL')
             #track trace to telemetry
             #self.telemetry_client.track_trace("Bot unsuccessful", properties, "ERROR")
 
